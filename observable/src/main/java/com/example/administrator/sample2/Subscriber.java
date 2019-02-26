@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * author : fenzili
@@ -23,7 +24,6 @@ public @interface Subscriber {
      * @return
      */
     String tag();
-
 
     /**
      * 事件执行的线程,默认为主线程

@@ -28,7 +28,7 @@ public class DefaultMatchPolicy implements MatchPolicy {
     }
 
     /**
-     * 获取该事件的所有类型
+     * 获取该事件的所有EventType类型
      *
      * @param eventTypes 存储列表
      * @param eventClass 事件实现的所有类

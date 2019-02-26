@@ -139,6 +139,9 @@ public final class EventBus {
 
     /**
      * 以sticky的形式注册,则会在注册成功之后迭代所有的sticky事件
+     * <p>
+     * EventBus粘性事件:就是先发布事件,订阅者在注册;
+     * 订阅者注册后,通过循环迭代已有的粘性事件缓存,如果发现改事件,进行查找匹配,如果订阅者中含有该粘性事件的函数,并且tag也想同就调用该订阅者执行对应的函数来响应该事件
      *
      * @param subscriber
      */
@@ -162,7 +165,7 @@ public final class EventBus {
     }
 
     /**
-     * 发布事件
+     * 发布事件:将事件EventType插入到该线程的变量queue中,然后分发事件,对它进行处理(即分发)
      *
      * @param event 要发布的事件
      * @param tag   事件的tag, 类似于BroadcastReceiver的action
@@ -179,6 +182,12 @@ public final class EventBus {
 
     /**
      * 发布Sticky事件,tag为EventType.DEFAULT_TAG
+     * <p>
+     * 注意:概粘性事件缺少正常事件分发处理;
+     * 我们通常有两种情况:
+     * 1.先注册,后发送事件;
+     * 2.先发送事件,后注册;(这种情况下是在注册时检查粘性事件缓存中是否含有该注册对象中的事件,然后进行匹配,匹配完毕后,对事件处理;
+     * 但是在订阅者注册后,再发送事件时,没有检查mSubscriberMap缓存中的订阅者是否含有该事件EventType类型,如果有的话应该进行处理)
      *
      * @param event
      */
@@ -216,7 +225,7 @@ public final class EventBus {
     }
 
     /**
-     * 设置订阅函数匹配策略
+     * 设置订阅函数对象匹配策略(即事件匹配策略)
      *
      * @param policy 匹配策略
      */
@@ -314,7 +323,7 @@ public final class EventBus {
         MatchPolicy mMatchPolicy = new DefaultMatchPolicy();
 
         /**
-         * 分发事件
+         * 分发事件:如果该线程变量的queue中含有事件EventType,将它拿出来进行分发处理
          *
          * @param object
          */
@@ -329,10 +338,11 @@ public final class EventBus {
          * 根据aEvent查找到所有匹配的集合,然后处理事件
          *
          * @param eventType
-         * @param object
+         * @param object    delivery:交付；分娩；递送
          */
         void deliveryEvent(EventType eventType, Object object) {
             // 如果有缓存则直接从缓存中取
+            // 根据事件EventType和对象获取适配的事件类型EventType列表(因为事件类可能含有父类或接口)
             List<EventType> eventTypes = getMatchedEventType(eventType, object);
             for (EventType eventType1 : eventTypes) {
                 handleEvent(eventType1, object);
@@ -400,6 +410,8 @@ public final class EventBus {
                      * 有两个Class类型的类象，一个是调用isAssignableFrom方法的类对象（后称对象a），以及方法中作为参数的这个类对象（称之为对象b），这两个对象如果满足以下条件则返回true，否则返回false：
                      * a对象所对应类信息是b对象所对应的类信息的父类或者是父接口，简单理解即a是b的父类或接口
                      * a对象所对应类信息与b对象所对应的类信息相同，简单理解即a和b为同一个类或同一个接口
+                     *
+                     * 但是我们使用stickEvent只是用来处理订阅者比发布事件晚的函数的,事件处理完后,我们就要移除订阅者对该粘性事件的订阅
                      */
                     if (isTarget(subscription, subscriber)
                             && (subscription.eventType.equals(foundEventType)
@@ -411,6 +423,7 @@ public final class EventBus {
                 }
             }
         }
+
         /**
          * 如果传递进来的订阅者不为空,那么该Sticky事件只传递给该订阅者(注册时),否则所有订阅者都传递(发布时).
          *
