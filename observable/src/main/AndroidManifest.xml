@@ -23,6 +23,7 @@
                 <action android:name="com.example.administrator.MyServer" />
             </intent-filter>
         </service>
+        <!--exported属性值，如果有“intent-filter”，则默认值为true，否则为false。所以这里其实可以去掉，因为有“intent-filter”，其默认值就是true-->
     </application>
 
 </manifest>

@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -19,6 +20,19 @@ import android.util.Log;
 
 public class MyAidlServer extends Service {
 
+    private RemoteCallbackList<IAidlCallback> remoteCallback = new RemoteCallbackList<>();
+
+    private void callback(Students student) {
+        int n = remoteCallback.beginBroadcast();
+        for (int i = 0; i < n; i++) {
+            try {
+                remoteCallback.getBroadcastItem(i).callback(student);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     IMyAidlInterface.Stub stub = new IMyAidlInterface.Stub() {
         @Override
         public int add(int arg1, int arg2) throws RemoteException {
@@ -27,25 +41,42 @@ public class MyAidlServer extends Service {
 
         @Override
         public String inStudentInfo(Students student) throws RemoteException {
-            Log.e("inStudentInfo",student.toString());
+            Log.e("inStudentInfo", student.toString());
             String msg = "table1" + "\n" + "----------------------------------------------" + "\n" + "|" + " id " + "|" + " " + "age " + "|" + " name " + "|" + " className " + "|" + "\n" + "----------------------------------------------" + "\n" + "|  " + student.getId() + " " + "|  " + student.getAge() + "  |  " + student.getName() + "   |     " + student.getClassName() + "   | " + "\n" + "----------------------------------------------";
-            return msg;
+            callback(student);
+            return msg + outStudentInfo(student);
         }
 
         @Override
         public String outStudentInfo(Students student) throws RemoteException {
-            Log.e("outStudentInfo",student.toString());
+            Log.e("outStudentInfo", student.toString());
             String msg = "table2" + "\n" + "----------------------------------------------" + "\n" + "|" + " id " + "|" + " " + "age " + "|" + " name " + "|" + " className " + "|" + "\n" + "----------------------------------------------" + "\n" + "|  " + student.getId() + " " + "|  " + student.getAge() + "  |  " + student.getName() + "   |     " + student.getClassName() + "   | " + "\n" + "----------------------------------------------";
             return msg;
         }
 
         @Override
         public String inOutStudentInfo(Students student) throws RemoteException {
-            Log.e("inOutStudentInfo",student.toString());
+            Log.e("inOutStudentInfo", student.toString());
             student.setClassName("090411");
             student.setAge(22);
             String msg = "table3" + "\n" + "----------------------------------------------" + "\n" + "|" + " id " + "|" + " " + "age " + "|" + " name " + "|" + " className " + "|" + "\n" + "----------------------------------------------" + "\n" + "|  " + student.getId() + " " + "|  " + student.getAge() + "  |  " + student.getName() + "   |     " + student.getClassName() + "   | " + "\n" + "----------------------------------------------";
             return msg;
+        }
+
+        @Override
+        public void registerCallback(IAidlCallback cb) throws RemoteException {
+            Log.e("registerCallback", cb.toString());
+            if (cb != null) {
+                remoteCallback.register(cb);
+            }
+        }
+
+        @Override
+        public void unregisterCallback(IAidlCallback cb) throws RemoteException {
+            Log.e("unregisterCallback", cb.toString());
+            if (cb != null) {
+                remoteCallback.unregister(cb);
+            }
         }
     };
 
