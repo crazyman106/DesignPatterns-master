@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.administrator.demo">
+    package="com.example.aidlclient">
 
     <application
         android:allowBackup="true"
@@ -16,13 +16,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name="com.example.administrator.designpatterns.MyAidlServer"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.example.administrator.MyServer" />
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>

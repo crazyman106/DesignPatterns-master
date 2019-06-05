@@ -1,4 +1,4 @@
-package com.example.administrator.designpatterns
+package com.example.administrator.demo
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -6,11 +6,10 @@ import com.example.administrator.sample1.Coder
 import com.example.administrator.sample1.Company
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
         test()
     }
 

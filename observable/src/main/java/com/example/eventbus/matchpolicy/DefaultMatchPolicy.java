@@ -48,9 +48,8 @@ public class DefaultMatchPolicy implements MatchPolicy {
 
     /**
      * 获取该事件的所有接口类型
-     * 
+     *
      * @param eventTypes 存储列表
-     * @param interfaces 事件实现的所有接口
      */
     private void addInterfaces(List<EventType> eventTypes, Class<?> eventClass, String tag) {
         if (eventClass == null) {
@@ -64,5 +63,4 @@ public class DefaultMatchPolicy implements MatchPolicy {
             }
         }
     }
-
 }
